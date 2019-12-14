@@ -1,3 +1,16 @@
+#---------------------------- Modules and Libraties ---------------------------#
+
+import pandas as pd
+import itertools
+import random
+import numpy as np
+import math
+import time
+import matplotlib.pyplot as plt
+
+
+
+
 #-------------------------------------------- Defining State-Action Space -----------------------------------------------------------#
 
 state1 = range(0,4,1) # define the discritized state space
@@ -9,6 +22,7 @@ action2 = range(0,4,1) # these will be the values sent to the servos so consider
 states = list(itertools.product(state1,state2)) # Create a list of every state combination
 actions = list(itertools.product(action1,action2)) # Create a list of every action combination
 
+
 # ---------------------------------- Initalize Q_Table (zeros, random, pre-trained) --------------------------------------------------#
 
 Q_zeros = pd.DataFrame(np.zeros((len(states), len(actions))), index=states, columns=actions, dtype=float)
@@ -16,46 +30,54 @@ Q_zeros = pd.DataFrame(np.zeros((len(states), len(actions))), index=states, colu
 Q_random = pd.DataFrame(np.random.uniform(0, 1, size=(len(states), len(actions))).round(4), index=states, columns=actions, dtype=float)
 
 Qtable = Q_zeros 
-    ---> run training session 
-      ---> save trained Qtable 
-        ---> Qtable.to_pickle('Trained_Qtable') 
-          ---> Load file for new session
-            ---> Qtable_trained = pd.read_pickle('Trained_Qtable')
+  #  ---> run training session 
+   #   ---> save trained Qtable 
+    #    ---> Qtable.to_pickle('Trained_Qtable') 
+     #     ---> Load file for new session
+      #      ---> Qtable_trained = pd.read_pickle('Trained_Qtable')
 
 
 
 # --------------------------------Accessing Qtable and required functions -------------------------------------#
 
 def get_max_action(Qtable,state):
-  action = Qtable.idxmax(axis=1).loc[[state]][0] # highested valued action
-  return(action)
+    action = Qtable.idxmax(axis=1).loc[[state]][0] # highested valued action
+    return(action)
  
-def random_action(actions):
-    return(random.choice(actions))
+    
+    
+    
+    
+#------------------------------------ Q agent Functions  ---------------------------------------------------#
     
 def random_state(states):
     return random.choice(states) 
 
-def Update_Qtable(Qtable,actions,state,action,new_state,alpha,gamma)
+def Update_Qtable(Qtable,actions,state,action,new_state,reward,alpha,gamma):
     Vnext = Qtable[actions].loc[[(new_state)]][:].max() # Max Q at new state
     Vmax=max(Vnext)
     Q=Qtable[action].loc[[(state)]][:].max()  # Past Qvalue of state-action pair
-    Qtable[action].loc[[state]] = (1-alpha)*Q+alpha*(R+Vmax*gamma)
+    Qtable[action].loc[[state]] = (1-alpha)*Q+alpha*(reward+Vmax*gamma)
     return(Qtable)
 
-def choose_action(Qtable,state,epsilion)
-  if random.uniform(0, 1) > epsilion:
-    action = Qtable.idxmax(axis=1).loc[[state]][0]
-  else: 
-    action = random_action()
-  return(action)
+def choose_action(Qtable,state,epsilion,actions):
+    if random.uniform(0, 1) > epsilion:
+        action = Qtable.idxmax(axis=1).loc[[state]][0]
+    else: 
+        action = random.choice(actions)
+    return(action)
   
-def Beta(start,end):
+def Beta(start,end,maxsteps):
     return math.exp(math.log(end/start)/maxsteps)
   
 
 
 #----------------------------------------------- Transition Function -----------------------------------------------------------------#
+
+#----------------------------------------------------- Controller Functions --------------------------------------------------------#
+
+
+#------------------------------------------------- Sensor Functions ----------------------------------------------------------------#
 
 
 #---------------------------------------------- Discritizing Sensory Inputs ----------------------------------------------------------#
@@ -66,66 +88,118 @@ def find_nearest(array, value):
     return array[idx]
 
 
-#----------------------------------------------------- Controller Functions --------------------------------------------------------#
-
-
-
-
-
-
-#------------------------------------------------- Sensor Functions ----------------------------------------------------------------#
-
-
-
-
-
-
-
-
-
-
-
-#--------------------------------------------- Qlearning _ Agent ------------------------------------------------------------------#
-
-
-
-
-
-
 
 #----------------- Transition Functions ----------------------#
 
-def transition(state,action)
-  return(new_state,reward)
+def transition(state,action):
+    new_state = (1,2)
+    reward = 1
+    return(new_state,reward)
 
 
 
 # ---------------------------------------Pre-training Simulator -----------------------------------------#
 
-def Learning_Simulator(Qtable,states,actions,inital_state,eps_inital,eps_final,alpha,gamma,training_steps)
+def Learning_Simulator(Qtable,states,actions,initial_state,eps_inital,eps_final,alpha,gamma,training_steps):
 
-  state = initial_state
-  step = 0
+    state = initial_state
+    epsilion = eps_inital
+    step = 0
   
-  while step < training_steps:
-    epsilion = epsilion * Beta(epsi,epsf)
-    action = choose_action(Qtable,state,epsilion)
-    newstate, reward = transition(state,action)
-    Qtable = Update_Qtable(Qtable,actions,state,action,new_state,alpha,gamma)
-    state = newstate
-    step = step + 1
+    while step < training_steps:
+        epsilion = epsilion * Beta(eps_inital,eps_final,training_steps)
+        action = choose_action(Qtable,state,epsilion,actions)
+        new_state, reward = transition(state,action)
+        Qtable = Update_Qtable(Qtable,actions,state,action,new_state,reward,alpha,gamma)
+        state = new_state
+        step = step + 1
+        
+   
+    Qtable['policy'] = Qtable.idxmax(axis=1)
+    policy = Qtable['policy']
+    return(policy)
     
     
     
     
-    
-  
-  
+#-------------------------------TEST-------------------------------------#
+
+initial_state = (0,0)
+eps_initial = 1
+eps_final=.1
+alpha=.9
+gamma=.8
+training_steps = 100
+policy_steps = 100
+
+
+Forward_policy = Learning_Simulator(Qtable,states,actions,inital_state,eps_initial,eps_final,alpha,gamma,training_steps)
 
 
 
 
 
+
+#-------------------------- Policy Evaluation ------------------------#
+
+def get_policy_action(what_policy,current_state):
+    policy_action = what_policy[current_state]
+    return(policy_action)
+
+def policy_rollout(what_policy,initial_state,policy_steps):
+    steps = 0
+    state = inital_state
+    iteration = []
+    reward_step = []
+    total_reward = []
+    average_reward = []
+    while steps < policy_steps:
+        action = get_policy_action(what_policy,state)
+        new_state, reward = transition(state,action)
+        state = new_state
+        
+        iteration.append(steps)
+        reward_step.append(reward)
+        total_reward.append(sum(reward_step))
+        average_reward.append(sum(total_reward)/len(iteration))
+        
+        steps = steps + 1
+        
+    reward_plotter(iteration,reward_step,total_reward,average_reward)  
+    return()
+        
+        
+def reward_plotter(iteration,reward_step,total_reward,average_reward):
+
+    df_Preformance_Plots = pd.DataFrame({ 
+                'Iteration': iteration, 
+                'Reward':reward_step,
+                'Total Reward':total_reward,
+                'Average Reward':average_reward
+                })
+    ax_preformance_parameters = plt.gca()
+    df_Preformance_Plots.plot(kind='line',x='Iteration',y='Reward',color='red',ax=ax_preformance_parameters)
+    df_Preformance_Plots.plot(kind='line',x='Iteration',y='Total Reward',color='blue',ax=ax_preformance_parameters)
+    df_Preformance_Plots.plot(kind='line',x='Iteration',y='Average Reward',color='green',ax=ax_preformance_parameters)
+    plt.show()
+    return()
+
+
+
+evaluate_policy = policy_rollout(Forward_policy,initial_state,policy_steps)
+    
+    
+
+
+
+#print(Forward_policy)
+#test = (0,0)
+#print(Forward_policy[test])#,Forward_policy[:][0])
+
+
+
+
+#----------------------------------------
 
 
 
