@@ -25,6 +25,7 @@ actions = list(itertools.product(action1,action2)) # Create a list of every acti
 
 # ---------------------------------- Initalize Q_Table (zeros, random, pre-trained) --------------------------------------------------#
 
+
 Q_zeros = pd.DataFrame(np.zeros((len(states), len(actions))), index=states, columns=actions, dtype=float)
 
 Q_random = pd.DataFrame(np.random.uniform(0, 1, size=(len(states), len(actions))).round(4), index=states, columns=actions, dtype=float)
@@ -44,10 +45,6 @@ def get_max_action(Qtable,state):
     action = Qtable.idxmax(axis=1).loc[[state]][0] # highested valued action
     return(action)
  
-    
-    
-    
-    
 #------------------------------------ Q agent Functions  ---------------------------------------------------#
     
 def random_state(states):
@@ -73,15 +70,13 @@ def Beta(start,end,maxsteps):
 
 
 #----------------------------------------------- Transition Function -----------------------------------------------------------------#
-
 #----------------------------------------------------- Controller Functions --------------------------------------------------------#
-
-
 #------------------------------------------------- Sensor Functions ----------------------------------------------------------------#
-
-
 #---------------------------------------------- Discritizing Sensory Inputs ----------------------------------------------------------#
+#----------------- Transition Functions ----------------------#
 
+
+    
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
@@ -89,18 +84,31 @@ def find_nearest(array, value):
 
 
 
-#----------------- Transition Functions ----------------------#
+def simulated_transition(state,action,states):
+    new_state = random_state(states)
+    if action == new_state:
+        reward = 1
+    else:
+        reward = 0
+    
+    # new_state = find_nearest(states,state)
+    return(new_state,reward)
 
-def transition(state,action):
-    new_state = (1,2)
-    reward = 1
+def non_simulated_transition(state,action,states):
+    # start sensors
+    # check servos
+    # write servos
+    # get new state
+    # discitize state
+    new_state = find_nearest(states,state)
+    # compute reward
     return(new_state,reward)
 
 
 
 # ---------------------------------------Pre-training Simulator -----------------------------------------#
 
-def Learning_Simulator(Qtable,states,actions,initial_state,eps_inital,eps_final,alpha,gamma,training_steps):
+def Q_Learner(simulate,Qtable,states,actions,initial_state,eps_inital,eps_final,alpha,gamma,training_steps):
 
     state = initial_state
     epsilion = eps_inital
@@ -109,53 +117,49 @@ def Learning_Simulator(Qtable,states,actions,initial_state,eps_inital,eps_final,
     while step < training_steps:
         epsilion = epsilion * Beta(eps_inital,eps_final,training_steps)
         action = choose_action(Qtable,state,epsilion,actions)
-        new_state, reward = transition(state,action)
+        
+        if simulate == True:
+            new_state, reward = simulated_transition(state,action,states)
+        else:
+            new_state, reward = non_simulated_transition(state,action,states)
+        
         Qtable = Update_Qtable(Qtable,actions,state,action,new_state,reward,alpha,gamma)
         state = new_state
-        step = step + 1
-        
-   
+        step = step + 1    
+    return(Qtable)
+
+
+  
+
+#-------------------------- Policy Evaluation ------------------------#
+
+
+def get_Qtable_policy(Qtable):
     Qtable['policy'] = Qtable.idxmax(axis=1)
     policy = Qtable['policy']
     return(policy)
     
+
     
-    
-    
-#-------------------------------TEST-------------------------------------#
-
-initial_state = (0,0)
-eps_initial = 1
-eps_final=.1
-alpha=.9
-gamma=.8
-training_steps = 100
-policy_steps = 100
-
-
-Forward_policy = Learning_Simulator(Qtable,states,actions,inital_state,eps_initial,eps_final,alpha,gamma,training_steps)
-
-
-
-
-
-
-#-------------------------- Policy Evaluation ------------------------#
-
 def get_policy_action(what_policy,current_state):
     policy_action = what_policy[current_state]
     return(policy_action)
 
-def policy_rollout(what_policy,initial_state,policy_steps):
+def policy_rollout(simulate,what_policy,initial_state,policy_steps,states):
     steps = 0
-    state = inital_state
+    state = initial_state
     iteration = []
     reward_step = []
     total_reward = []
     average_reward = []
     while steps < policy_steps:
         action = get_policy_action(what_policy,state)
-        new_state, reward = transition(state,action)
+        
+        if simulate == True:
+            new_state, reward = simulated_transition(state,action,states)
+        else:
+            new_state, reward = non_simulated_transition(state,action,states)
+        
         state = new_state
         
         iteration.append(steps)
@@ -166,6 +170,7 @@ def policy_rollout(what_policy,initial_state,policy_steps):
         steps = steps + 1
         
     reward_plotter(iteration,reward_step,total_reward,average_reward)  
+    
     return()
         
         
@@ -185,21 +190,28 @@ def reward_plotter(iteration,reward_step,total_reward,average_reward):
     return()
 
 
-
-evaluate_policy = policy_rollout(Forward_policy,initial_state,policy_steps)
     
     
+#-----------------------------------------------Training----------------------------------------#
+
+simulate = True # set to false for physical testing
+
+initial_state = (0,0) # starting state
+
+eps_initial = 1
+eps_final=.1
+alpha=.9
+gamma=.8
+
+training_steps = 100
+policy_steps = 100
 
 
 
-#print(Forward_policy)
-#test = (0,0)
-#print(Forward_policy[test])#,Forward_policy[:][0])
+trained_Qtable = Q_Learner(simulate,Q_zeros,states,actions,initial_state,eps_initial,eps_final,alpha,gamma,training_steps) # train agent
+policy = get_Qtable_policy(trained_Qtable) # extract policy
+evaluate_policy = policy_rollout(simulate,policy,initial_state,policy_steps,states) # run policy
 
-
-
-
-#----------------------------------------
 
 
 
