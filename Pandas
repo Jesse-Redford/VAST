@@ -88,6 +88,24 @@ def load_Qtable(path,filename):
     
     
 # ----------------------------------------------- Qlearning Algorithm using Pandas  ----------------------------------------------------#
+  
+  
+  def Update_Qtable(Qtable,actions,state,action,new_state,reward,alpha,gamma):
+    Vnext = Qtable[actions].loc[[(new_state)]][:].max() # Max Q at new state
+    Vmax=max(Vnext)
+    Q=Qtable[action].loc[[(state)]][:].max()  # Past Qvalue of state-action pair
+    Qtable[action].loc[[state]] = (1-alpha)*Q+alpha*(reward+Vmax*gamma)
+    return(Qtable)
+
+def choose_action(Qtable,state,epsilion,actions):
+    if random.uniform(0, 1) > epsilion:
+        action = Qtable.idxmax(axis=1).loc[[state]][0]
+    else: 
+        action = random.choice(actions)
+    return(action)
+  
+  
+  
   def Q_Learner(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps):
 
     state = initial_state
