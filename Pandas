@@ -1,0 +1,165 @@
+
+# Index 
+- Dependices
+- Usecase Example
+- Creating state-action space
+- Building Qtables with pandas
+- Saving and Loading Qtables
+- Qlearning Algorithm using Pandas
+- Accessing Qtable Policies
+- Transforming Qtables to matrices
+- Ploting and visualizing Qtables
+
+
+
+#------------------------------------------- Usecase Examples -------------------------------------------------------------------#
+
+state1 = state2 = range(0,2,0)
+action1 = action2 = range(0,3,0)
+
+path =r'C:\Users\Jesse\Desktop\Python + Robotics\VAST PLATFORM\Qtables' # set directory to save file
+filename = '\Qtest4.pkl' # make this discriptive - save results
+
+states, actions = two_states_two_actions(state1,state2,action1,action2):
+
+Untrained_Qtable = create_zeros_Qtable(states,actions)
+
+Train_Qtable = Q_Learner(simulate,
+                         Qtable,
+                         states,
+                         actions,
+                         initial_state,
+                         eps_initial,
+                         eps_final,
+                         alpha_initial,
+                         alpha_final,
+                         gamma_initial,
+                         gamma_final,
+                         training_steps)
+
+
+
+
+
+# ---------------------------------- Creating state-action space -----------------------------------------------------------------------#
+ 
+# state = action = range(lower_bound, upper_bound, step_size)
+
+# - multi dimension state-action space
+
+def two_states_two_actions(state1,state2,action1,action2):
+    states = list(itertools.product(state1,state2)) # Create a list of every state combination
+    actions = list(itertools.product(action1,action2)) # Create a list of every action combination
+    return (states,actions)
+
+def three_states_two_actions(state1,state2,state3,action1,action2):
+    states = list(itertools.product(state1,state2,state3)) # Create a list of every state combination
+    actions = list(itertools.product(action1,action2)) # Create a list of every action combination
+    return (states,actions)
+
+def three_states_three_actions(state1,state2,state3,action1,action2,action3):
+    states = list(itertools.product(state1,state2,state3)) # Create a list of every state combination
+    actions = list(itertools.product(action1,action2,action3)) # Create a list of every action combination
+    return states,actions
+   
+#------------------------------------------- Creating Qtables with pandas ---------------------------------------------------------#
+
+
+def create_zeros_Qtable(states,actions):
+    return (pd.DataFrame(np.zeros((len(states), len(actions))), index=states, columns=actions, dtype=float))
+
+def create_random_Qtable(states,actions,lowerbound,upperbound,round_to):
+       return (pd.DataFrame(np.random.uniform(lowerbound, upperbound, size=(len(states), len(actions))).round(round_to), index=states, columns=actions, dtype=float))
+
+
+
+# -------------------------------------- Saving and Loading Qtables ----------------------------------------------------------------#
+
+def save_Qtable(Qtable,path,filename):
+    Qtable.to_pickle(path+filename)
+    print('Qfunction is saved')
+    return()
+
+def load_Qtable(path,filename):
+    print('Qfunction is loaded')
+    return pd.read_pickle(path+filename)
+    
+    
+    
+    
+# ----------------------------------------------- Qlearning Algorithm using Pandas  ----------------------------------------------------#
+  def Q_Learner(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps):
+
+    state = initial_state
+    
+    epsilion = eps_inital
+    alpha = alpha_initial
+    gamma = gamma_initial
+    
+    step = 0
+  
+    while step < training_steps:
+        
+        alpha = alpha * exponential_decay(alpha_initial,alpha_final,training_steps)
+        gamma = gamma * exponential_decay(gamma_initial,gamma_final,training_steps)
+     
+        
+        epsilion = epsilion * exponential_decay(eps_initial,eps_final,training_steps)
+        action = choose_action(Qtable,state,epsilion,actions) # choose action with probability epsilion
+        
+        if simulate == True:
+            new_state, reward = simulated_transition(state,action,states)
+        else:
+            new_state, reward = non_simulated_transition(state,action,states)
+        
+        Qtable = Update_Qtable(Qtable,actions,state,action,new_state,reward,alpha,gamma)
+        state = new_state
+        step = step + 1    
+        
+    return(Qtable)
+    
+    
+    
+    
+# ------------------------------------------- Accessing Qtable Policies ------------------------------------------------------------- #
+
+def get_Qtable_policy(Qtable):
+    Qtable['policy'] = Qtable.idxmax(axis=1)
+    policy = Qtable['policy']
+    return(policy)
+    
+def get_policy_action(what_policy,current_state):
+    policy_action = what_policy[current_state]
+    return(policy_action)
+    
+def policy_rollout(simulate,what_policy,initial_state,policy_steps,states):
+    steps = 0
+    state = initial_state
+    iteration = []
+    reward_step = []
+    total_reward = []
+    average_reward = []
+    while steps < policy_steps:
+        action = get_policy_action(what_policy,state)
+        
+        if simulate == True:
+            new_state, reward = simulated_transition(state,action,states)
+        else:
+            new_state, reward = non_simulated_transition(state,action,states)
+        
+        state = new_state
+        
+        iteration.append(steps)
+        reward_step.append(reward)
+        total_reward.append(sum(reward_step))
+        average_reward.append(sum(total_reward)/len(iteration))
+        
+        steps = steps + 1
+        
+    reward_plotter(iteration,reward_step,total_reward,average_reward)  
+    
+    return()
+    
+    
+    
+    
