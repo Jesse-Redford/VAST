@@ -1,0 +1,54 @@
+#======================================================== Intel_RealSense_Camera ======================================================#
+
+# Installation Reference
+
+
+# ======================================================== Function Reference ========================================================= #
+
+- update location
+- log record
+- reset
+
+
+#==================================================== Examples and Testing ==========================================================================#
+
+
+
+
+
+
+# ======================================================= Function Details ==============================================================#
+
+import math
+import pyrealsense2 as rs
+
+def getRotVecs(quat):
+    qHat=[quat[0],quat[1],quat[2]]
+    qHatMag=(qHat[0]**2+qHat[1]**2+qHat[2]**2)**(1/2)
+    eHat=[qHat[0]/qHatMag,qHat[1]/qHatMag,qHat[2]/qHatMag]
+    theta=2*math.acos(quat[3])
+    return [theta*eHat[0],theta*eHat[1],theta*eHat[2]]
+def GetLoc():
+    frames=pipe.wait_for_frames()
+    pose=frames.get_pose_frame()
+    data=pose.get_pose_data()
+    rotVecs=getRotVecs([data.rotation.x,data.rotation.y,data.rotation.z,data.rotation.w])
+    phi=rotVecs[1]
+    x=-data.translation.z
+    y=-data.translation.x
+    return [x,y,phi]
+## RUN THIS SECOND AT BEGINNING OF TRIAL
+rs.device.hardware_reset             #this resets the initial location
+pipe=rs.pipeline()
+cfg=rs.config()
+cfg.enable_stream(rs.stream.pose)
+pipe.start(cfg)
+### RUN THIS MULTIPLE TIMES TO OUTPUT THE STATE OF THE SENSOR (X,Y,PHI)###
+print(GetLoc)
+###RUN THIS AT END OF TRIAL###
+pipe.stop()
+
+
+
+
+
