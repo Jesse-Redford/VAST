@@ -1,0 +1,125 @@
+# Includes Kinimatics of Pendlum 
+
+
+- Import Pendelum_Enviroment --> ( this will import the module Pendulum_Environment
+- from Pendelum_Enviroment* --> (this will input the function into your main script)  
+
+
+- Inputs: Applied Tourqe, Current Position, and Current Angular Velosity
+- Outputs: New postion, New Angular Velosity
+
+
+def Pendelum_Enviroment(theta,thetadot,T):
+  
+  dt = .001 # m/s
+  theta/dt**2 = g
+  m * g * l = sin(theta)
+  T = m*g*l*sin(theta) 
+  E = 
+  theta_new[integrated, dt_out
+  
+  return(theta_new,thetadot_new)
+  
+  
+  
+  
+  import numpy as np
+from scipy.integrate import odeint
+import matplotlib.pyplot as plt
+import math
+
+
+
+
+def system(state,t,action):
+    theta,thetadot = state
+    T = action
+    g = 9.82
+    k_loss = .1
+    m = 1
+    L = 1
+    dxdt = thetadot
+    dwdt = T/(m*L**2) - ((k_loss * thetadot) / (m*L)) - g*math.sin(theta)#*180/math.pi)
+    return dxdt,dwdt
+
+
+def integrate(sys,state,t):
+    #start , stop , steptime = t
+    solved = odeint(sys,state,t,args=(action,))
+    #newstate = solved[len(solved)-1]
+    # print(solved) outputs at each time interval
+    newstate = tuple(solved[len(solved)-1]) # in radians
+    theta_deg = newstate[0]
+    thetadot_deg = newstate[1] # * 180/math.pi
+    newstate_deg = (theta_deg,thetadot_deg)
+    return newstate_deg
+
+def transition(state,action):
+    newstate = integrate(system,state,t)
+    if newstate[1] == 180 and newstate[2] == 0:
+        reward = 1
+    else: reward = 0
+    return(newstate,reward)
+
+
+theta = 0
+thetadot = 0
+action = 1 # torqe
+state = (theta, thetadot)
+t = np.linspace(0,1,100)
+
+
+
+thetas=[]
+acts = []
+thetadots = []
+action = -10
+
+import random as rand
+i=0
+while i < 20:
+    action = 20+i
+    newstate,reward = transition(state,action)
+    thetas.append(newstate[0])
+    thetadots.append(newstate[1])
+    acts.append(action)
+    i = i+1
+   
+   
+   
+   
+policy = np.array([thetas,thetadots,acts]).T
+print(policy)
+
+###Prints policy###
+print("Policy is being printed")
+###Print policy###
+#Create figure
+plt.axes([0.2, 0.025, 0.7, 0.9])
+
+plt.imshow(policy, interpolation='nearest', cmap='YlGnBu_r', origin='upper')
+plt.colorbar(shrink=.92)
+
+#Create arrays with labels for axes
+y_bars = ('π','3π/4','π/2','π/4','0','-π/4','-π/2','-3π/4','-π',)
+x_bars = ('0','π/4','π/2','3π/4','π', '5π/4','3π/2', '7π/4','2π')
+pos = np.arange(0,18,2)
+
+#y = ('π','3π/4','π/2','π/4','0','-π/4','-π/2','-3π/4','-π',)
+#x = (0,math.pi/4,math.pi/2,3*math.pi/4,math.pi, 5*math.pi/4,3* math.pi/2, 7*math.pi/4,2*math.pi)
+
+#Add title and axis names
+plt.title('Inverted Pendulum Policy')
+plt.xlabel('Position (rad)')
+plt.ylabel('Velocity (rad/s)')
+
+#Add array labels
+plt.xticks(pos, x_bars)
+plt.yticks(pos, y_bars)
+
+plt.show()
+
+
+
+print(math.pi/4)
+print(math.pi/2)
