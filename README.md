@@ -53,12 +53,16 @@ where v1, v2 are the potential angular velosities we can send to the servos and 
 
 - Consider 
 
-Given that we are using positional servos which can only move in 1degree increments, we created an alogirthm allows for contunious like behavoior by adding time delays between positonal movments.
+Given that we are using positional servos which can only move in 1degree increments, we created an alogirthm allows for contunious like behavoior by adding time delays between positonal movments. 
+
+-Define 
 
     v1 = v2 = (lower_bound = -10, upper_bound = 10, step_size = 1) # in units of deg/sec
     t = range(0,1,.1) # units of sec
     actions = list(itertools.product(v1,v2,T))
 
+
+-Create the action function which will be used in the non_simulated_transition function later 
 
     def Snake_Bot_Action(current_state, selected_action)
       theta1, theta2, phi = current_state
