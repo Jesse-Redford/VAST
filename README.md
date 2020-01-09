@@ -172,39 +172,8 @@ Next we will setup a Qlearning algorithm with a pandas data struture. In doing s
 
 # SnakeBot Module
 
-Main loop
+Libraries
 
-        def RunTest( simulate, directory, load_filename, save_path, save_filename, state1, state2, state3, action1, action2,                                  action3, initial_state, eps_initial, eps_final,alpha_initial, alpha_final, gamma_initial, gamma_final,                                  training_steps, policy_steps)
-                      
-                 Qtable = Qlearner.load_Qtable(path,filename)
-                 states,actions = Qlearner.three_states_three_actions(state1,state2,state3,action1,action2,action3)
-
-                 trainedQtable =                                    Q_Learner.train(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps)
-
-                  trainedQtable.to_pickle(save_path+filename) # can also do JSON or other file types
-                  print('Finished Saving Qtable')
-        
-                  print("Begining PolicyRollout") 
-                  if policy_steps > 0:
-                        print("Begining PolicyRollout") 
-                        policy_rollout(simulate,what_policy,initial_state,policy_steps,states)
-                        print("PolicyRollout is Complete")
-                 else:
-                         print("Training is Complete")
-                
-         return()
-         
-Create simulated and non-simulated transition functions
-
-        def simulate_transition(state,action,states)
-                return(new_state,reward)
-        
-        
-        def simulate_transition(state,action,states)
-                return(new_state,reward)
-        
-
-Call Functions
 
         import pandas as pd
         import itertools
@@ -214,6 +183,43 @@ Call Functions
         import time
         import matplotlib.pyplot as plt
         import pickle
+
+
+Main loop for Testing
+
+        def RunTest( simulate, load_path, load_filename, save_path, save_filename, state1, state2, state3, action1, action2,                                  action3, initial_state, eps_initial, eps_final,alpha_initial, alpha_final, gamma_initial, gamma_final,                                  training_steps, policy_steps)
+                      
+                 Qtable =load_Qtable(load_path,load_filename)
+                 states,actions = three_states_three_actions(state1,state2,state3,action1,action2,action3)
+
+                 trainedQtable =                                    Train(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps)
+
+                  trainedQtable.to_pickle(save_path+filename) # can also do JSON or other file types
+                  print('Finished Saving Qtable')
+        
+                  print("Begining PolicyRollout") 
+                  if policy_steps > 0:
+                        print("Begining PolicyRollout") 
+                        PolicyRollout(Qtable,simulate,initial_state,policy_steps,states)
+                        print("PolicyRollout is Complete")
+                 else:
+                         print("Training is Complete")
+                
+         return()
+         
+Simulated and non-simulated transition functions
+
+        def simulate_transition(state,action,states)
+                return(new_state,reward)
+        
+        
+        def simulate_transition(state,action,states)
+                return(new_state,reward)
+        
+
+Various Call Functions
+
+    
 
 
         def three_states_three_actions(state1,state2,state3,action1,action2,action3):
@@ -240,9 +246,9 @@ Call Functions
                 return pd.read_pickle(path+filename)
                 
                 
- Qlearning 
+ Training Loop Function 
  
-    def         Q_Learner(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps):
+    def         Train(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps):
     
     state = initial_state
     
@@ -330,5 +336,9 @@ policy rollout functions
     return()
 
 
-
+        def PolicyRollout(Qtable,simulate,initial_state,policy_steps,states)
+                 policy = get_Qtable_policy(Qtable)
+                policy_rollout(simulate,policy,initial_state,policy_steps,states)
+        return()
+    
  
