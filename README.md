@@ -98,142 +98,23 @@ Sudo code for creating the Snake_bot_Environment, (see module for complete detai
 
 # Qlearning with Pandas 
 Next we will setup a Qlearning algorithm with a pandas data struture. In doing so we can mantain a consistant method of intizalizing, training, and managing a varity of simulated and non-simulated enviroments. Lets start by setting up a working directory and an untrained Qtable.
-
+    
+    import Snakebot
+    
     path =r'C:\Users\Jesse\Desktop\VAST\Qtables' 
     filename = '\Qtable_untrained.pkl'
 
-    Qtable_untrained = Qlearner.create_zeros_Qtable(states,actions)
-    Qtable.to_pickle(path+filename) 
-
-
-                     
-                      
-# Creating Q-Training Module 
-
-      defQ_Learner(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,tra ining_steps):
-
-    state = initial_state
+    Qtable_untrained = Snakebot.create_zeros_Qtable(states,actions)
     
-    epsilion = eps_inital
-    alpha = alpha_initial
-    gamma = gamma_initial
+    Qtable_untrained.to_pickle(path+filename) 
     
-    step = 0
-  
-    while step < training_steps:
-        
-        alpha = alpha * exponential_decay(alpha_initial,alpha_final,training_steps)
-        gamma = gamma * exponential_decay(gamma_initial,gamma_final,training_steps)
+    
      
-        
-        epsilion = epsilion * exponential_decay(eps_initial,eps_final,training_steps)
-        action = choose_action(Qtable,state,epsilion,actions) # choose action with probability epsilion
-        
-        if simulate == True:
-            new_state, reward = simulated_transition(state,action,states)
-        else:
-            new_state, reward = non_simulated_transition(state,action,states)
-        
-        Qtable = Update_Qtable(Qtable,actions,state,action,new_state,reward,alpha,gamma)
-        state = new_state
-        step = step + 1    
-        
-    return(Qtable)
-    
-# Policy-Roll-Out Module
-
-    def get_Qtable_policy(Qtable):
-       Qtable['policy'] = Qtable.idxmax(axis=1)
-       policy = Qtable['policy']
-       return(policy)
-    
-     def get_policy_action(what_policy,current_state):
-        policy_action = what_policy[current_state]
-        return(policy_action)
-    
-      def policy_rollout(simulate,what_policy,initial_state,policy_steps,states):
-          steps = 0
-          state = initial_state
-          iteration = []
-          reward_step = []
-          total_reward = []
-          average_reward = []
-          while steps < policy_steps:
-            action = get_policy_action(what_policy,state)
-            
-            if simulate == True:
-               new_state, reward = simulated_transition(state,action,states)
-             else:
-               new_state, reward = non_simulated_transition(state,action,states)
-        
-             state = new_state
-        
-            iteration.append(steps)
-            reward_step.append(reward)
-            total_reward.append(sum(reward_step))
-            average_reward.append(sum(total_reward)/len(iteration))
-        
-            steps = steps + 1
-        
-            reward_plotter(iteration,reward_step,total_reward,average_reward)  
-    
-            return()
-    
-    
-    def reward_plotter(iteration,reward_step,total_reward,average_reward):
-
-    df_Preformance_Plots = pd.DataFrame({ 
-                'Iteration': iteration, 
-                'Reward':reward_step,
-                'Total Reward':total_reward,
-                'Average Reward':average_reward
-                })
-    ax_preformance_parameters = plt.gca()
-    df_Preformance_Plots.plot(kind='line',x='Iteration',y='Reward',color='red',ax=ax_preformance_parameters)
-    df_Preformance_Plots.plot(kind='line',x='Iteration',y='Total Reward',color='blue',ax=ax_preformance_parameters)
-    df_Preformance_Plots.plot(kind='line',x='Iteration',y='Average Reward',color='green',ax=ax_preformance_parameters)
-    plt.show()
-    return()
-
-
-# SnakeBot_VI
-
-import Qlearner
-import QPolicy
-import simulated_transition # update on own
-import non_simulated_transition # update with will
-
-def SnakeBot_VI( simulate, 
-                 directory, 
-                 load_filename, 
-                 save_path, 
-                 save_filename, 
-                 state1, state2, state3, action1, action2, action3, 
-                 initial_state,
-                 eps_initial                  
-                 eps_final
-                 alpha_initial
-                 alpha_final 
-                 gamma_initial
-                 gamma_final
-                 training_steps, # number of steps to train
-                 policy_steps
-                      )
-                      
-Qtable = Qlearner.load_Qtable(path,filename)
-states,actions = Qlearner.three_states_three_actions(state1,state2,state3,action1,action2,action3)
-
-trainedQtable = Q_Learner(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps)
-
-Policy_Rollout = PolicyRollout.policy_rollout(simulate,what_policy,initial_state,policy_steps,states)
- 
-- new_state, reward = simulated_transition(state,action,states)
-
-def SnakeBot(
 
 # Inializing a Training Session
 
-     Run_Test = SnakeBot_VI(
+
+     InitializeRun = SnakeBot.RunTest(
 
                       simulate =  True, # Set to false for physical testing
                       
@@ -276,3 +157,168 @@ def SnakeBot(
                       policy_steps = 100, # number of steps to rollout policy, set training steps to 0 to just run policy
                       
                       )
+
+
+
+# SnakeBot Module
+
+Main loop
+
+        def RunTest( simulate, directory, load_filename, save_path, save_filename, state1, state2, state3, action1, action2,                                  action3, initial_state, eps_initial, eps_final,alpha_initial, alpha_final, gamma_initial, gamma_final,                                  training_steps, policy_steps)
+                      
+                 Qtable = Qlearner.load_Qtable(path,filename)
+                 states,actions = Qlearner.three_states_three_actions(state1,state2,state3,action1,action2,action3)
+
+                 trainedQtable =                                    Q_Learner.train(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps)
+
+                  trainedQtable.to_pickle(save_path+filename) # can also do JSON or other file types
+                  print('Finished Saving Qtable')
+        
+                  print("Begining PolicyRollout") 
+                  if policy_steps > 0:
+                        print("Begining PolicyRollout") 
+                        policy_rollout(simulate,what_policy,initial_state,policy_steps,states)
+                        print("PolicyRollout is Complete")
+                 else:
+                         print("Training is Complete")
+                
+         return()
+         
+Create simulated and non-simulated transition functions
+
+        def simulate_transition(state,action,states)
+                return(new_state,reward)
+        
+        
+        def simulate_transition(state,action,states)
+                return(new_state,reward)
+        
+
+Call Functions
+
+        import pandas as pd
+        import itertools
+        import random
+        import numpy as np
+        import math
+        import time
+        import matplotlib.pyplot as plt
+        import pickle
+
+
+        def three_states_three_actions(state1,state2,state3,action1,action2,action3):
+                states = list(itertools.product(state1,state2,state3)) # Create a list of every state combination
+                actions = list(itertools.product(action1,action2,action3)) # Create a list of every action combination
+                return states,actions
+    
+
+
+        def create_zeros_Qtable(states,actions):
+         return (pd.DataFrame(np.zeros((len(states), len(actions))), index=states, columns=actions, dtype=float))
+
+
+        def create_random_Qtable(states,actions,lowerbound,upperbound,round_to):
+        return (pd.DataFrame(np.random.uniform(lowerbound, upperbound, size=(len(states), len(actions))).round(round_to), index=states,         columns=actions, dtype=float))
+
+        def save_Qtable(Qtable,path,filename):
+                Qtable.to_pickle(path+filename)
+                print('Qfunction is saved')
+                return()
+
+        def load_Qtable(path,filename):
+                print('Qfunction is loaded')
+                return pd.read_pickle(path+filename)
+                
+                
+ Qlearning 
+ 
+    def         Q_Learner(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps):
+    
+    state = initial_state
+    
+    epsilion = eps_inital
+    alpha = alpha_initial
+    gamma = gamma_initial
+    
+    step = 0
+  
+    while step < training_steps:
+        
+        alpha = alpha * exponential_decay(alpha_initial,alpha_final,training_steps)
+        gamma = gamma * exponential_decay(gamma_initial,gamma_final,training_steps)
+     
+        
+        epsilion = epsilion * exponential_decay(eps_initial,eps_final,training_steps)
+        action = choose_action(Qtable,state,epsilion,actions) # choose action with probability epsilion
+        
+        if simulate == True:
+            new_state, reward = simulated_transition(state,action,states)
+        else:
+            new_state, reward = non_simulated_transition(state,action,states)
+        
+        Qtable = Update_Qtable(Qtable,actions,state,action,new_state,reward,alpha,gamma)
+        state = new_state
+        step = step + 1    
+        
+    return(Qtable)
+    
+    
+    
+policy rollout functions
+
+    def get_Qtable_policy(Qtable):
+       Qtable['policy'] = Qtable.idxmax(axis=1)
+       policy = Qtable['policy']
+       return(policy)
+    
+     def get_policy_action(what_policy,current_state):
+        policy_action = what_policy[current_state]
+        return(policy_action)
+    
+      def policy_rollout(simulate,what_policy,initial_state,policy_steps,states):
+          steps = 0
+          state = initial_state
+          iteration = []
+          reward_step = []
+          total_reward = []
+          average_reward = []
+          while steps < policy_steps:
+            action = get_policy_action(what_policy,state)
+            
+            if simulate == True:
+               new_state, reward = SnakeBot.simulated_transition(state,action,states)
+             else:
+               new_state, reward = SnakeBot.non_simulated_transition(state,action,states)
+        
+             state = new_state
+        
+            iteration.append(steps)
+            reward_step.append(reward)
+            total_reward.append(sum(reward_step))
+            average_reward.append(sum(total_reward)/len(iteration))
+        
+            steps = steps + 1
+        
+            reward_plotter(iteration,reward_step,total_reward,average_reward)  
+    
+            return()
+    
+    
+    def reward_plotter(iteration,reward_step,total_reward,average_reward):
+
+    df_Preformance_Plots = pd.DataFrame({ 
+                'Iteration': iteration, 
+                'Reward':reward_step,
+                'Total Reward':total_reward,
+                'Average Reward':average_reward
+                })
+    ax_preformance_parameters = plt.gca()
+    df_Preformance_Plots.plot(kind='line',x='Iteration',y='Reward',color='red',ax=ax_preformance_parameters)
+    df_Preformance_Plots.plot(kind='line',x='Iteration',y='Total Reward',color='blue',ax=ax_preformance_parameters)
+    df_Preformance_Plots.plot(kind='line',x='Iteration',y='Average Reward',color='green',ax=ax_preformance_parameters)
+    plt.show()
+    return()
+
+
+
+ 
