@@ -106,52 +106,7 @@ Next we will setup a Qlearning algorithm with a pandas data struture. In doing s
     Qtable.to_pickle(path+filename) 
 
 
-# Inializing a Training Session
-
-     Run_Test = SnakeBot_VI(
-
-                      simulate =  True, # Set to false for physical testing
-                      
-                      load_path = r'C:\Users\Jesse\Desktop\VASt\Qtables', # path where saving data, update as 
-                      
-                      load_filename = '\Qtable_untrained.pkl' , # make zeros file, or load pre trained
-                      
-                      save_path = load_path, # where to save results
-                      
-                      save_filename = '\Qtable_trained.pkl' ,# name of new Qfunction
-                      
-                      theta1 = range(0,1,1), # lowerbound, upperbound, stepsize
-                      
-                      theta2 = range(0,1,1), # lowerbound, upperbound, stepsize
-                      
-                      phi = range(0,1,1), # lowerbound, upperbound, stepsize
-                      
-                      v1 = range(0,1,1),  # velosity bounds
-                      
-                      v2 = range(0,1,1), # velosity bounds
-                      
-                      t = range(0,1,1) # dt - time duration of action
-                      
-                      initial_state = (90,90,90), # intialized state at beging of training or policy rollout
-                      
-                      eps_initial = 1, # eps initial for training
-                      
-                      eps_final = .1, # eps initial for training
-                      
-                      alpha_initial = .7,  # alpha initial for training
-                      
-                      alpha_final = .8, # alpha initial for training
-                      
-                      gamma_initial = .9, # alpha initial for training
-                      
-                      gamma_final = .8, # alpha initial for training
-                      
-                      training_steps = 100, # number of steps to train
-                      
-                      policy_steps = 100, # number of steps to rollout policy, set training steps to 0 to just run policy
-                      
-                      )
-                      
+                     
                       
 # Creating Q-Training Module 
 
@@ -185,7 +140,7 @@ Next we will setup a Qlearning algorithm with a pandas data struture. In doing s
         
     return(Qtable)
     
-# Create Policy-Roll-Out Module
+# Policy-Roll-Out Module
 
     def get_Qtable_policy(Qtable):
        Qtable['policy'] = Qtable.idxmax(axis=1)
@@ -241,4 +196,83 @@ Next we will setup a Qlearning algorithm with a pandas data struture. In doing s
     return()
 
 
+# SnakeBot_VI
 
+import Qlearner
+import QPolicy
+import simulated_transition # update on own
+import non_simulated_transition # update with will
+
+def SnakeBot_VI( simulate, 
+                 directory, 
+                 load_filename, 
+                 save_path, 
+                 save_filename, 
+                 state1, state2, state3, action1, action2, action3, 
+                 initial_state,
+                 eps_initial                  
+                 eps_final
+                 alpha_initial
+                 alpha_final 
+                 gamma_initial
+                 gamma_final
+                 training_steps, # number of steps to train
+                 policy_steps
+                      )
+                      
+Qtable = Qlearner.load_Qtable(path,filename)
+states,actions = Qlearner.three_states_three_actions(state1,state2,state3,action1,action2,action3)
+
+trainedQtable = Q_Learner(simulate,Qtable,states,actions,initial_state,eps_initial,eps_final,alpha_initial,alpha_final,gamma_initial,gamma_final,training_steps)
+
+Policy_Rollout = PolicyRollout.policy_rollout(simulate,what_policy,initial_state,policy_steps,states)
+ 
+- new_state, reward = simulated_transition(state,action,states)
+
+def SnakeBot(
+
+# Inializing a Training Session
+
+     Run_Test = SnakeBot_VI(
+
+                      simulate =  True, # Set to false for physical testing
+                      
+                      load_path = r'C:\Users\Jesse\Desktop\VASt\Qtables', # path where saving data, update as 
+                      
+                      load_filename = '\Qtable_untrained.pkl' , # make zeros file, or load pre trained
+                      
+                      save_path = load_path, # where to save results
+                      
+                      save_filename = '\Qtable_trained.pkl' ,# name of new Qfunction
+                      
+                      theta1 = range(0,1,1), # lowerbound, upperbound, stepsize
+                      
+                      theta2 = range(0,1,1), # lowerbound, upperbound, stepsize
+                      
+                      phi = range(0,1,1), # lowerbound, upperbound, stepsize
+                      
+                      v1 = range(0,1,1),  # velosity bounds
+                      
+                      v2 = range(0,1,1), # velosity bounds
+                      
+                      t = range(0,1,1) # dt - time duration of action
+                      
+                      initial_state = (90,90,90), # intialized state at beging of training or policy rollout
+                      
+                      eps_initial = 1, # eps initial for training
+                      
+                      eps_final = .1, # eps initial for training
+                      
+                      alpha_initial = .7,  # alpha initial for training
+                      
+                      alpha_final = .8, # alpha initial for training
+                      
+                      gamma_initial = .9, # alpha initial for training
+                      
+                      gamma_final = .8, # alpha initial for training
+                      
+                      training_steps = 100, # number of steps to train
+                      
+                      policy_steps = 100, # number of steps to rollout policy, set training steps to 0 to just run policy
+                      
+                      )
