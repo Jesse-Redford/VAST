@@ -75,9 +75,9 @@ In order to apply Qlearning we need to create an enviroment in which the agent c
 Your enviroment will consist of primarly of two things a transition function and a reward function.
 The transition function should accept a current state,action pair and return a newstate coupled by a reward. 
 
-Sudo code for creating the Snake_bot_Environment, (see module for complete details). example below For our purposes the transition function will abide by the following sudo code.
+Sudo code for creating the Snake_bot_Environment, (see module for complete details). example below For our purposes the transition function will abide by the following simulated and nonsimulated need to be added to SnakeBot module
 
-    def transition_enviroment(current_state, selected_action, all_possible_states)
+    def non_simulated_transition(current_state, selected_action, all_possible_states)
   
       theta1_old, theta2_old, phi_old = current_state 
       thetadot1, thetadot2, t_interval = selected_action
@@ -93,6 +93,12 @@ Sudo code for creating the Snake_bot_Environment, (see module for complete detai
     reward = x_new - x_old
  
     return(new_state,reward)
+    
+    
+    def simulated_transition(current_state, selected_action, all_possible_states)
+    
+        reward = x_new - x_old
+        return(new_state,reward)
 
 
 
