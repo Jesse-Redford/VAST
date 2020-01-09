@@ -74,8 +74,9 @@ Given that we are using positional servos which can only move in 1degree increme
 In order to apply Qlearning we need to create an enviroment in which the agent can interact and learn from.
 Your enviroment will consist of primarly of two things a transition function and a reward function.
 The transition function should accept a current state,action pair and return a newstate coupled by a reward. 
-
 Sudo code for creating the Snake_bot_Environment, (see module for complete details). example below For our purposes the transition function will abide by the following simulated and nonsimulated need to be added to SnakeBot module
+
+# non_simulated_transition
 
     def non_simulated_transition(current_state, selected_action, all_possible_states)
   
@@ -94,6 +95,9 @@ Sudo code for creating the Snake_bot_Environment, (see module for complete detai
  
     return(new_state,reward)
     
+    
+    
+# simulated_transition
     
     def simulated_transition(current_state, selected_action, all_possible_states)
     
