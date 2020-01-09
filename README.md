@@ -10,11 +10,19 @@ You will need to purchase and install software on a Rasberry Pi B+3 using the fo
 Next you will need to import the Intel_Real_Sense module, see program for details. 
 
 
+                Add working test code here
+
+
 # Installing Servo Hat
 For this we will need to install circuit python, see the example here. --> (website link)
 
+
+                Add working test code here
+
 # Wiring battery source
 
+                
+                Add diagram and schematic here
 
 
 # Defining a State-Action Space
