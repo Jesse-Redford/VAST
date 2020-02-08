@@ -1,3 +1,0 @@
-# import path locations to create and store data
-import sys
-sys.append('Work directory')
