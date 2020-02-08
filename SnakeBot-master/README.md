@@ -4,14 +4,14 @@ Capstone project we created a deep-Qlearning Snakebot
 # DQN Testing Files
 - SnakeBot_DQN_runner_USER_GUIDE.md   # setup tutorial
 - SnakeBot_DQN_runner.py            # setup and execute test
-- DQN_Snakebot_Agent.py             # algorithm and enviroment setup
+- DQN_Agent.py             # algorithm and enviroment setup
 - DQN_network_utilities.py          # helper functions for DQN networks
 - DQN_plotting_utilities.py         # helper for saving session history
 
 # Q Testing Files
 - SnakeBot_Q_runner_USER_GUIDE.md   # setup tutorial
 - SnakeBot_Q_runner.py              # setup and execute tests
-- Q_Snakebot_Agent.py               # algorithm and enviroment setup
+- Q_Agent.py               # algorithm and enviroment setup
 - Q_pandas_utilities.py             # helper functions for Qtables 
 - Q_plotting_utilities.py           # helper for saving session history
 
