@@ -6,9 +6,7 @@ The idea of VAST is to provide all the resources you need to ML and RL running o
  
 # Snakebot - Master
 
-[<img src="https://www.youtube.com/watch?v=qRYVz2Kdqok/maxresdefault.jpg" width="50%">](https://www.youtube.com/watch?v=qRYVz2Kdqok)
-
-
+- add images and video results here
 
 # Fishbot - Master
 
