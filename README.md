@@ -6,9 +6,18 @@ The idea of VAST is to provide all the resources you need to ML and RL running o
  
 # Snakebot - Master
 
-- add images and video results here
+- add folder with all Qlearning and DQN files and documentation once verified and completed, highlight plots, images and video results here
 
 # Fishbot - Master
 
+- add folder with all Qlearning and DQN files and documentation once verified and completed, highlight plots, images and video results here
 
+# Intellegent Locomotion Controller - Master
 
+- add folder containing all files and documentation for developing an Intellegent Locomotion Controller which uses 
+- Qlearning to devleop low level control polcies which are then saved and used by a highlevel DQN network as actions
+- in order to naviage to difference global coordinates highlight plots, images and video results here
+
+# VAST App - Master
+
+- add kivy documetation and files for creating a monioritng and deployment app
