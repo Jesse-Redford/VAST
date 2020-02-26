@@ -21,3 +21,6 @@ The idea of VAST is to provide all the resources you need to ML and RL running o
 # VAST App - Master
 
 - add kivy documetation and files for creating a monioritng and deployment app
+
+# ROS Developer Guide
+- code details and setup for using ROS and online development studio
