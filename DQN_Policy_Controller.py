@@ -134,14 +134,36 @@ def execute_policy(current_system_state, selected_policy_action, policy_steps = 
 def RunSession(example_state,actions, learning_rate = 0.0001, model_architecture = (50,10) , discountfactor = 0.9, 
                 iterations = 10, episodes = 2, buffer_size = 100, batch_size = 20, update_frequency =20,
                   epsilion, epsilion_inital = 1, epsilion_final = 0.1):
-                  
-
+    Step_loss =[]
+    Step_total = []
+    Step_mean = []
+    Step_std = []
+    
+    Batch_loss = []
+    Batch_mean = []
+    Batch_std = []
+    
+    Reward = []
+    Reward_total = []
+    Reward_avg = []
+    Reward_std = []
+    Reward_samp = []
+    
+    X = []
+    Y = []
+    
+    Step = []       
+    step = 0
+    
     #Initalize QNetwork
-    Q_network = NN.generate_networks(example_state, actions, learning_rate, model_architecture)
+    Q_network, Target_network = NN.generate_networks(example_state, actions, learning_rate, model_architecture)
+    
+    # Initialize target action-value function Qhat with weights theta - = theta --> Target_network
+    Target_network.set_weights(Q_network.get_weights())
 
     # Initalize Replay buffer
     D = collections.deque(maxlen=buffer_size)
-
+    
      # initialize training             
     for e in range(episodes):
         
@@ -152,6 +174,9 @@ def RunSession(example_state,actions, learning_rate = 0.0001, model_architecture
         dqn_state = (system_state[0],system_state[1],system_state[2],system_state[5],system_state[6]) 
         
         for i in range(iterations):
+            
+            X.append(system_state[0]) # record current location
+            Y.append(system_state[1]) # record current location
             
             # choose action(policy) according to epsilion
             action, Q_index = NN.choose_action(Q_network, dqn_state, actions, epsilion)
@@ -165,21 +190,58 @@ def RunSession(example_state,actions, learning_rate = 0.0001, model_architecture
             # record experience and add to replay buffer
             experience = (dqn_state, action, dqn_newstate, reward)
             D.append(experience)
-     
-            # preform experiene replay and gradient decent step
-            Q_network, batch_loss, batch_mean, batch_std = NN.experience_replay(Q_network, D, learning_rate, batch_size,actions) 
+            
+            if i > buffer_size or e > 1:
+                # sample random minibatch of transistions (s,a,s',r) from D
+                Q_network, batch_loss, batch_mean, batch_std = NN.experience_replay(Q_network, Target_network, D, learning_rate, discountfactor, batch_size, actions)
+                
+                # store loss history 
+                Batch_loss += batch_loss #.append(batch_loss)
+                Batch_mean += batch_mean #.append(batch_mean)
+                Batch_std += batch_std #.append(batch_std)
+                
+            
+            # perform a gradient descent step on ( yi - lr*max_Qhat(s',a',theta -))^2 wrt to current Q_network weights 
+            Q_network, loss = NN.gradient_step(Q_network, Target_network, experience, learning_rate, discountfactor,Q_index)
+                
+            # Every C steps reset Qhat = Q
+            if step == update_frequency:
+                Target_network = Q_network
+                step = 0                 
+            else:
+                step += 1
      
             # update current state
             dqn_state = dqn_newstate
             
+            Reward.append(reward)
+            Reward_total.append(sum(Reward))
+            Reward_avg.append(sum(Reward_total)/len(Reward))
+            Reward_samp.append(sum(Reward)/len(Reward))
+            Reward_std.append(np.std(Reward))
+          
+            Step_loss.append(loss)
+            Step_total.append(sum(Step_loss))
+            Step_mean.append(sum(Step_loss)/len(Step_loss))
+            Step_std.append(np.std(Step_loss))
+    
+            
         pipe.stop() # stop data feed before reseting camera
-     
+    
+    
+    DQN_plotting_utilities.plot_results(Reward, Reward_total, Reward_avg, Reward_std,  Reward_samp,
+                                        Step_loss, Step_total, Step_mean,Step_std,
+                                       Batch_loss, Batch_mean, Batch_std)
+        
+        
     return()
 
 
 ######################################################
 ############## Setup for Intellegent Controller ######
 ######################################################
+
+# import load parameters function for Qtables
 
 def load_Qtable(path,filename):
     print('Qfunction is loaded')
