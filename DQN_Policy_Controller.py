@@ -115,7 +115,7 @@ def PolicyRollout(current_system_state, selected_policy_action, policy_steps, pi
 def execute_policy(current_system_state, selected_policy_action, policy_steps = 10, pipe):
 
      # Executre policy for a fixed amout of steps
-     new_system_state = PolicyRollout(current_system_state,  low_level_state, pipe, policy_steps = 10)
+     new_system_state = PolicyRollout(current_system_state,  selected_policy_action, policy_steps, pipe)
      
      xtarget = current_system_state[5]
      ytarget = current_system_state[6]
