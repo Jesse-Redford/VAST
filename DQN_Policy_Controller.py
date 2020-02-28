@@ -251,7 +251,7 @@ def GetFileParameters(path,filename):
     return states,actions
     
 # Load Qpolicies and parameters to create Action Space
-QX = (Qfx, states, phi_states)
+QX = (Qfx, states, phi_states) # or just load policy and phi_states
 QY = (Qfy, states, phi_states)
 action1 = QX
 actions2 = QY
