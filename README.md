@@ -24,14 +24,23 @@ Visualization tool I create to help visualize how the weights and biases of NN c
 
 - add folder with all Qlearning and DQN files and documentation once verified and completed, highlight plots, images and video results here
 
+<details>
+  <summary>Click here to see example code</summary>
 
 ![Snakebot Prototype](https://github.com/Jesse-Redford/VAST/blob/master/SnakeBot.JPG?raw=true)
+
+</details>
 
 # Fishbot - Master
 
 - add folder with all Qlearning and DQN files and documentation once verified and completed, highlight plots, images and video results here
 
+<details>
+  <summary>Click here to see example code</summary>
+  
 ![Fishbot Prototype](https://github.com/Jesse-Redford/VAST/blob/master/Fishbot-Prototype.jpg?raw=true)
+
+</details>
 
 # Intellegent Locomotion Controller - Master
 
