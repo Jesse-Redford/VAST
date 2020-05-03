@@ -3,6 +3,8 @@
 The idea of VAST is to provide all the resources you need to ML and RL running on your robotic projects. Each master folder contains a robot prototype. These folder contain setup intrucstions, wiring details, code examples, results and more.
 
 
+![Example of VAST Controller](https://github.com/Jesse-Redford/VAST/blob/master/VAST%20Controller.PNG?raw=true)
+
 # Nerual Network Visualization
 Visualization tool I create to help visualize how the weights and biases of NN change during training. 
 
