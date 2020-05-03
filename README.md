@@ -3,7 +3,13 @@
 The idea of VAST is to provide all the resources you need to ML and RL running on your robotic projects. Each master folder contains a robot prototype. These folder contain setup intrucstions, wiring details, code examples, results and more.
 
 
- 
+# Nerual Network Visualization
+
+
+
+
+
+
 # Snakebot - Master
 
 - add folder with all Qlearning and DQN files and documentation once verified and completed, highlight plots, images and video results here
