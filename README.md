@@ -4,9 +4,15 @@ The idea of VAST is to provide all the resources you need to ML and RL running o
 
 
 # Nerual Network Visualization
+Visualization tool I create to help visualize how the weights and biases of NN change during training. 
+
+![Example](https://github.com/Jesse-Redford/VAST/blob/master/NN%20Anaylsis.PNG?raw=true)
 
 
-(https://github.com/Jesse-Redford/VAST/blob/master/NN%20Anaylsis.PNG?raw=true)
+<details>
+  <summary>Click here to see example code</summary>
+
+</details>
 
 
 
