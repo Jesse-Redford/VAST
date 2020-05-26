@@ -33,7 +33,7 @@ to demonstate how to preform forward propogation with matrix multiplication
       model = Sequential()
       model.add(Dense(layer1_neurons, input_dim = len(S), activation='relu',kernel_initializer='normal'))
       model.add(Dense(layer2_neurons, activation='relu',kernel_initializer='normal'))
-      model.add(Dense(output_dim = len(actions), activation='relu',kernel_initializer='normal'))
+      model.add(Dense(output_dim = len(A), activation='relu',kernel_initializer='normal'))
       model.compile(loss='mse', optimizer=RMSprop(lr=.1))
       
       # You might be used to using model.predict(state), to get the models Q-estimates for each action given a state input. 
@@ -64,10 +64,10 @@ to demonstate how to preform forward propogation with matrix multiplication
       input_state = (np.asarray(state).reshape(1, len(state)))
       
       # Method 1
-      Q_estimates_method1 = model.predict(state)
+      Q_estimates_method1 = model.predict(input_state)
       
       # Method 2
-      Z = np.dot(state,w1)+b1
+      Z = np.dot(input_state,w1)+b1
       H = relu(Z)
       Z1 = np.dot(H,w2)+b2
       H1 = relu(Z1)
@@ -75,7 +75,7 @@ to demonstate how to preform forward propogation with matrix multiplication
       Q_estimates_method2 = relu(Z2)
       
       # Method 3
-      Q_estimates_method3 = relu(np.dot(relu(np.dot(relu(np.dot(state,w1)+b1),w2)+b2),w3)+b3)
+      Q_estimates_method3 = relu(np.dot(relu(np.dot(relu(np.dot(input_state,w1)+b1),w2)+b2),w3)+b3)
           
       
       # Results for each method
